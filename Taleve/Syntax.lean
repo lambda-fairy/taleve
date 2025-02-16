@@ -26,15 +26,15 @@ macro_rules
     let rows := ← (rows : TSyntaxArray `Taleve.row).reverse.mapM fun
       | `(row| $cells*) => do
         let cells := ← cells.mapM fun
-          | `(cell| -) => ``(Cell.empty)
-          | `(cell| #) => ``(Cell.gray)
-          | `(cell| I) => ``(Cell.colored Piece.I)
-          | `(cell| O) => ``(Cell.colored Piece.O)
-          | `(cell| T) => ``(Cell.colored Piece.T)
-          | `(cell| S) => ``(Cell.colored Piece.S)
-          | `(cell| Z) => ``(Cell.colored Piece.Z)
-          | `(cell| J) => ``(Cell.colored Piece.J)
-          | `(cell| L) => ``(Cell.colored Piece.L)
+          | `(cell| -) => ``(none)
+          | `(cell| #) => ``(some Mino.gray)
+          | `(cell| I) => ``(some (Mino.colored Piece.I))
+          | `(cell| O) => ``(some (Mino.colored Piece.O))
+          | `(cell| T) => ``(some (Mino.colored Piece.T))
+          | `(cell| S) => ``(some (Mino.colored Piece.S))
+          | `(cell| Z) => ``(some (Mino.colored Piece.Z))
+          | `(cell| J) => ``(some (Mino.colored Piece.J))
+          | `(cell| L) => ``(some (Mino.colored Piece.L))
           | _ => throwUnsupported
         -- Use `:)` so that type errors are reported using `Row` instead of the underlying `Vector`.
         ``((Row.mk #v[ $[$cells],* ] :))
@@ -48,15 +48,16 @@ def unexpandBoard : Unexpander
     let rows := ← (rows : TSyntaxArray `term).reverse.mapM fun
       | `(Row.mk { toArray := #[$cells,*], size_toArray := $_ }) => do
         let cells := ← (cells : TSyntaxArray `term).mapM fun
-          | `(Cell.empty) => `(cell| -)
-          | `(Cell.gray) => `(cell| #)
-          | `(Cell.colored Piece.I) => `(cell| I)
-          | `(Cell.colored Piece.O) => `(cell| O)
-          | `(Cell.colored Piece.T) => `(cell| T)
-          | `(Cell.colored Piece.S) => `(cell| S)
-          | `(Cell.colored Piece.Z) => `(cell| Z)
-          | `(Cell.colored Piece.J) => `(cell| J)
-          | `(Cell.colored Piece.L) => `(cell| L)
+          | `(none) => `(cell| -)
+          | `(some Mino.gray) => `(cell| #)
+          -- FIXME this doesn't work
+          | `(some (Mino.colored Piece.I)) => `(cell| I)
+          | `(some (Mino.colored Piece.O)) => `(cell| O)
+          | `(some (Mino.colored Piece.T)) => `(cell| T)
+          | `(some (Mino.colored Piece.S)) => `(cell| S)
+          | `(some (Mino.colored Piece.Z)) => `(cell| Z)
+          | `(some (Mino.colored Piece.J)) => `(cell| J)
+          | `(some (Mino.colored Piece.L)) => `(cell| L)
           | _ => throw ()
         `(row| $cells*)
       | _ => throw ()
