@@ -42,6 +42,14 @@ instance (w h) : DecidableEq (Board w h) := by
   unfold Board
   infer_instance
 
-def Board.mk {w h} (board : Vector (Row w) h) : Board w h := board
+namespace Board
+
+def mk {w h} (board : Vector (Row w) h) : Board w h := board
+
+def paste {w h w' h'} (target : Board w h) (source : Board w' h') (offsetX offsetY : ℕ) :
+    Board w h :=
+  Vector.pasteGrid target source offsetX offsetY
+
+end Board
 
 end Taleve
