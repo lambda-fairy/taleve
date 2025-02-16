@@ -43,18 +43,23 @@ def getD (board : Board w h) (x y : ℤ) (default : Cell) : Cell :=
   else
     default
 
-def get? (board : Board w h) (x y : ℤ) : Cell :=
-  board.getD x y .none
+def getOrEmpty (board : Board w h) (x y : ℤ) : Cell := board.getD x y none
+
+def getOrFull (board : Board w h) (x y : ℤ) : Cell := board.getD x y (some .gray)
 
 def ofFn (fn : Fin w → Fin h → Cell) : Board w h :=
   .mk <| .ofFn fun y ↦ .mk <| .ofFn fun x ↦ fn x y
 
 def paste (target : Board w h) (source : Board w' h') (ox oy : ℤ) : Board w h :=
-  .ofFn fun x y ↦ source.get? (x - ox) (y - oy) <|> target.get x y
+  .ofFn fun x y ↦ source.getOrEmpty (x - ox) (y - oy) <|> target.get x y
 
-def countOverlap (target : Board w h) (source : Board w' h') (ox oy : ℤ) : ℕ :=
-  ∑ (x : Fin w') (y : Fin h'),
-    ((source.get x y).isSome && (target.get? (ox + x) (oy + y)).isSome).toNat
+def IsDisjointAt (target : Board w h) (source : Board w' h') (ox oy : ℤ) : Prop :=
+  ∀ (x : Fin w') (y : Fin h'), source.get x y = none ∨ target.getOrFull (ox + x) (oy + y) = none
+
+instance (target : Board w h) (source : Board w' h') (ox oy : ℤ) :
+    Decidable (IsDisjointAt target source ox oy) := by
+  unfold IsDisjointAt
+  infer_instance
 
 end Board
 
