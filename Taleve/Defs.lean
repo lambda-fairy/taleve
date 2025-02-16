@@ -1,4 +1,4 @@
-import Mathlib
+import Taleve.ForMathlib
 
 namespace Taleve
 
@@ -18,11 +18,19 @@ instance (w) : DecidableEq (Row w) := by
   unfold Row
   infer_instance
 
+instance (w) : Fintype (Row w) := by
+  unfold Row
+  infer_instance
+
 def Row.mk {w} (row : Vector Cell w) : Row w := row
 
 def Board (w h : ℕ) := Vector (Row w) h
 
 instance (w h) : DecidableEq (Board w h) := by
+  unfold Board
+  infer_instance
+
+instance (w h) : Fintype (Board w h) := by
   unfold Board
   infer_instance
 

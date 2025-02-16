@@ -144,4 +144,9 @@ theorem pieces.valid₂ :
     ∀ p r, (∑ (x) (y), if (pieces p r).get x y ≠ none then 1 else 0) = 4 := by
   decide
 
+theorem pieces_injective_of_ne_O {p : Piece} (hp : p ≠ .O) : Function.Injective (pieces p) := by
+  cases p
+  case «O» => contradiction
+  all_goals decide
+
 end Taleve
