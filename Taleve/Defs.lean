@@ -28,11 +28,33 @@ instance (w h) : DecidableEq (Board w h) := by
 
 namespace Board
 
-def mk {w h} (board : Vector (Row w) h) : Board w h := board
+variable {w h w' h' : ℕ}
 
-def paste {w h w' h'} (target : Board w h) (source : Board w' h') (offsetX offsetY : ℕ) :
-    Board w h :=
-  Vector.pasteGrid target source offsetX offsetY
+def mk (board : Vector (Row w) h) : Board w h := board
+
+def toVector (board : Board w h) : Vector (Vector Cell w) h := board
+
+def get (board : Board w h) (x : Fin w) (y : Fin h) : Cell :=
+  board.toVector[y][x]
+
+def getD (board : Board w h) (x y : ℤ) (default : Cell) : Cell :=
+  if _ : 0 ≤ x ∧ x < w ∧ 0 ≤ y ∧ y < h then
+    board.toVector[y.toNat][x.toNat]
+  else
+    default
+
+def get? (board : Board w h) (x y : ℤ) : Cell :=
+  board.getD x y .none
+
+def ofFn (fn : Fin w → Fin h → Cell) : Board w h :=
+  .mk <| .ofFn fun y ↦ .mk <| .ofFn fun x ↦ fn x y
+
+def paste (target : Board w h) (source : Board w' h') (ox oy : ℤ) : Board w h :=
+  .ofFn fun x y ↦ source.get? (x - ox) (y - oy) <|> target.get x y
+
+def countOverlap (target : Board w h) (source : Board w' h') (ox oy : ℤ) : ℕ :=
+  ∑ (x : Fin w') (y : Fin h'),
+    ((source.get x y).isSome && (target.get? (ox + x) (oy + y)).isSome).toNat
 
 end Board
 
