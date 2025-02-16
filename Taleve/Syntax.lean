@@ -50,14 +50,16 @@ def unexpandBoard : Unexpander
         let cells := ← (cells : TSyntaxArray `term).mapM fun
           | `(none) => `(cell| -)
           | `(some Mino.gray) => `(cell| #)
-          -- FIXME this doesn't work
-          | `(some (Mino.colored Piece.I)) => `(cell| I)
-          | `(some (Mino.colored Piece.O)) => `(cell| O)
-          | `(some (Mino.colored Piece.T)) => `(cell| T)
-          | `(some (Mino.colored Piece.S)) => `(cell| S)
-          | `(some (Mino.colored Piece.Z)) => `(cell| Z)
-          | `(some (Mino.colored Piece.J)) => `(cell| J)
-          | `(some (Mino.colored Piece.L)) => `(cell| L)
+          -- The parenthesizer hasn't run yet, so a nested match is needed here.
+          | `(some $inner) => match inner with
+            | `(Mino.colored Piece.I) => `(cell| I)
+            | `(Mino.colored Piece.O) => `(cell| O)
+            | `(Mino.colored Piece.T) => `(cell| T)
+            | `(Mino.colored Piece.S) => `(cell| S)
+            | `(Mino.colored Piece.Z) => `(cell| Z)
+            | `(Mino.colored Piece.J) => `(cell| J)
+            | `(Mino.colored Piece.L) => `(cell| L)
+            | _ => throw ()
           | _ => throw ()
         `(row| $cells*)
       | _ => throw ()
