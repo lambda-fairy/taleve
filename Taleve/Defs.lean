@@ -50,8 +50,25 @@ def getOrFull (board : Board w h) (x y : ℤ) : Cell := board.getD x y (some .gr
 def ofFn (fn : Fin w → Fin h → Cell) : Board w h :=
   .mk <| .ofFn fun y ↦ .mk <| .ofFn fun x ↦ fn x y
 
+@[simp]
+theorem get_ofFn (x : Fin w) (y : Fin h) (fn : Fin w → Fin h → Cell) :
+    (ofFn fn).get x y = fn x y := by
+  simp [get, ofFn, toVector, mk, Row.mk]
+
 def paste (target : Board w h) (source : Board w' h') (ox oy : ℤ) : Board w h :=
   .ofFn fun x y ↦ source.getOrEmpty (x - ox) (y - oy) <|> target.get x y
+
+@[simp]
+theorem get_paste_of_some (target : Board w h) (source : Board w' h') (ox oy : ℤ)
+    (x : Fin w) (y : Fin h) (m : Mino) (h : source.getOrEmpty (x - ox) (y - oy) = some m) :
+    (target.paste source ox oy).get x y = source.getOrEmpty (x - ox) (y - oy) := by
+  simp [paste, h]
+
+@[simp]
+theorem get_paste_of_none (target : Board w h) (source : Board w' h') (ox oy : ℤ)
+    (x : Fin w) (y : Fin h) (h : source.getOrEmpty (x - ox) (y - oy) = none) :
+    (target.paste source ox oy).get x y = target.get x y := by
+  simp [paste, h]
 
 def IsDisjointAt (target : Board w h) (source : Board w' h') (ox oy : ℤ) : Prop :=
   ∀ (x : Fin w') (y : Fin h'), source.get x y = none ∨ target.getOrFull (ox + x) (oy + y) = none
