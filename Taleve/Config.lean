@@ -146,7 +146,7 @@ theorem pieces.valid₂ :
 
 theorem pieces_injective_of_ne_O {p : Piece} (hp : p ≠ .O) : Function.Injective (pieces p) := by
   cases p
-  case «O» => contradiction
+  case O => contradiction
   all_goals decide
 
 end Taleve

@@ -6,7 +6,8 @@ open Lean
 open Lean.Parser.Tactic (sepByIndentSemicolon)
 open Lean.PrettyPrinter
 
-declare_syntax_cat cell
+-- Set `behavior := symbol` so that the identifiers can still be used outside of the syntax.
+declare_syntax_cat cell (behavior := symbol)
 scoped syntax "- " : cell
 scoped syntax "# " : cell
 scoped syntax "I " : cell
